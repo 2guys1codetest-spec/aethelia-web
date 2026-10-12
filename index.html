@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aethelia Online - Dunkle Verliese</title>
+    <!-- Rustikale, gotische Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'MedievalSharp', cursive, serif;
+            background-color: #030101;
+            color: #d1c7bd;
+        }
+
+        /* --- STATISCHES EINZELNES HINTERGRUNDBILD --- */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('background.png'); /* Hier den exakten Dateinamen eintragen */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #0d0403; /* Dunkler Fallback */
+            filter: contrast(1.2) brightness(0.4);
+            z-index: -2;
+        }
+
+        /* Schwerer Horror-Vignettierungs-Filter */
+        .horror-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(10, 2, 2, 0.2) 20%, rgba(2, 0, 0, 0.92) 90%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(5, 2, 1, 0.9);
+            border-bottom: 2px solid #381205;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: #a8a29e;
+            font-family: 'MedievalSharp', cursive, serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #ef4444;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+        }
+
+        .game-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.2rem;
+            color: #991b1b;
+            text-shadow: 0 0 15px rgba(153, 27, 27, 0.8), 2px 2px 4px #000;
+            letter-spacing: 3px;
+        }
+
+        /* Schnell-Login rechts im Header */
+        .header-auth {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-auth input {
+            padding: 6px 10px;
+            background: #0c0705;
+            border: 1px solid #442211;
+            color: #f5f5f4;
+            font-family: 'MedievalSharp', cursive, serif;
+            font-size: 0.9rem;
+            border-radius: 2px;
+            width: 130px;
+        }
+
+        .header-auth input:focus {
+            outline: none;
+            border-color: #991b1b;
+        }
+
+        .btn-mini {
+            padding: 6px 12px;
+            background: #5c1414;
+            color: #fca5a5;
+            border: 1px solid #7f1d1d;
+            font-family: 'MedievalSharp', cursive, serif;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .btn-mini:hover {
+            background: #7f1d1d;
+            color: #fff;
+        }
+
+        /* --- HAUPTINHALT --- */
+        .main-content {
+            margin-top: 130px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-section {
+            text-align: center;
+            max-width: 800px;
+            background: rgba(10, 5, 3, 0.85);
+            border: 2px solid #381205;
+            padding: 40px;
+            border-radius: 6px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+        }
+
+        .hero-section h2 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.5rem;
+            color: #dc2626;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+
+        .hero-section p {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #d1c7bd;
+            margin-bottom: 25px;
+        }
+
+        .btn-download {
+            display: inline-block;
+            padding: 16px 45px;
+            background: linear-gradient(to bottom, #7f1d1d, #450a0a);
+            color: #fef2f2;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.3rem;
+            text-decoration: none;
+            border: 2px solid #991b1b;
+            box-shadow: 0 0 30px rgba(153, 27, 27, 0.6);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: linear-gradient(to bottom, #b91c1c, #7f1d1d);
+            box-shadow: 0 0 45px rgba(220, 38, 38, 0.95);
+            transform: scale(1.05);
+        }
+
+        .grid-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(12, 7, 5, 0.88);
+            border: 1px solid #451a03;
+            padding: 25px;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #991b1b;
+        }
+
+        .card h3 {
+            font-family: 'Cinzel Decorative', serif;
+            color: #ef4444;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #a8a29e;
+            margin-bottom: 15px;
+        }
+
+        .card-link {
+            color: #fca5a5;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .card-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            background: rgba(12, 7, 5, 0.97);
+            border: 2px solid #571e1b;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95), inset 0 0 20px rgba(153, 27, 27, 0.2);
+            padding: 35px;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
+        .modal h2 {
+            font-family: 'Cinzel Decorative', serif;
+            color: #ef4444;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        .modal p {
+            color: #d1c7bd;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .close-btn {
+            display: block;
+            width: 150px;
+            margin: 0 auto;
+            padding: 8px;
+            background: #5c1414;
+            color: #fff;
+            border: 1px solid #7f1d1d;
+            font-family: 'MedievalSharp', cursive, serif;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .close-btn:hover {
+            background: #7f1d1d;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- --- STATISCHER HINTERGRUND (OHNE ANIMATION) --- -->
+    <div class="bg-image"></div>
+    <div class="horror-overlay"></div>
+
+    <!-- Audios -->
+    <audio id="hover-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+    <audio id="click-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+
+    <!-- --- HEADER --- -->
+    <header>
+        <nav class="nav-tabs">
+            <button class="nav-link active" onclick="openModal('home')">Home</button>
+            <button class="nav-link" onclick="openModal('newsModal')">News</button>
+            <button class="nav-link" onclick="openModal('guideModal')">Guide</button>
+            <button class="nav-link" onclick="openModal('shopModal')">Shop</button>
+            <button class="nav-link" onclick="openModal('communityModal')">Community</button>
+        </nav>
+
+        <h1 class="game-title">AETHELIA</h1>
+
+        <div class="header-auth">
+            <input type="text" placeholder="Benutzername">
+            <input type="password" placeholder="Passwort">
+            <button class="btn-mini" onclick="playClick()">Login</button>
+        </div>
+    </header>
+
+    <!-- --- SEITENINHALT --- -->
+    <div class="main-content">
+        <div class="hero-section">
+            <h2>BETRETE DAS REICH DER FINSTERNIS</h2>
+            <p>Kämpfe dich durch blutige Katakomben, stelle dich alptraumhaften Bestien und fordere dein Schicksal im ultimativen Dark-Fantasy-MMO heraus. Lade den Launcher herunter und beginne deine Reise.</p>
+            <a href="launcher.exe" class="btn-download" onmouseenter="playHover()" onclick="playClick()">LAUNCHER HERUNTERLADEN</a>
+        </div>
+
+        <div class="grid-section">
+            <div class="card">
+                <h3>Letzte Chroniken</h3>
+                <p>Erfahre alles über den neuen Patch 0.2, gefundene Artefakte und die Schrecken der tiefsten Ebenen.</p>
+                <span class="card-link" onclick="openModal('newsModal')">Mehr lesen &rarr;</span>
+            </div>
+            <div class="card">
+                <h3>Klassen & Kodex</h3>
+                <p>Erlange Wissen über uralte Magie, tödliche Klingen und den Schutzschild der Rechtschaffenen.</p>
+                <span class="card-link" onclick="openModal('guideModal')">Zum Handbuch &rarr;</span>
+            </div>
+            <div class="card">
+                <h3>Der Seelenmarkt</h3>
+                <p>Sichere dir exklusive Rüstungssets, düstere Reittiere und einzigartige Titel für dein Profil.</p>
+                <span class="card-link" onclick="openModal('shopModal')">Zum Shop &rarr;</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- MODALS --- -->
+    <div id="newsModal" class="modal">
+        <h2>Aktuelle News</h2>
+        <p>• Patch 0.2 veröffentlicht: Die Katakomben von Aethelia wurden um neue Bossgegner erweitert.<br>• Server-Stabilität verbessert und Latenzen optimiert.</p>
+        <button class="close-btn" onclick="closeModals()">Schließen</button>
+    </div>
+
+    <div id="guideModal" class="modal">
+        <h2>Spieler-Handbuch</h2>
+        <p>Willkommen in den Schatten. Wähle deine Klasse weise: Der Ritter trotzt der Dunkelheit, während der Nekromant die Gefallenen ruft. Nutze den Launcher, um dem Reich beizutreten.</p>
+        <button class="close-btn" onclick="closeModals()">Schließen</button>
+    </div>
+
+    <div id="shopModal" class="modal">
+        <h2>Aethelia Online-Shop</h2>
+        <p>Hier kannst du exklusive kosmetische Rüstungen, finstere Reittiere und Gründer-Pakete erwerben, um das Überleben in den Dungeons zu sichern.</p>
+        <button class="close-btn" onclick="closeModals()">Schließen</button>
+    </div>
+
+    <div id="communityModal" class="modal">
+        <h2>Die Gemeinschaft</h2>
+        <p>Schließe dich unserem finsteren Discord-Server an, tausche Beute aus, finde Mitstreiter für Raids und diskutiere über die Lore von Aethelia.</p>
+        <button class="close-btn" onclick="closeModals()">Schließen</button>
+    </div>
+
+    <script>
+        const hoverAudio = document.getElementById('hover-sound');
+        const clickAudio = document.getElementById('click-sound');
+        hoverAudio.volume = 0.3;
+        clickAudio.volume = 0.4;
+
+        function playHover() {
+            hoverAudio.currentTime = 0;
+            hoverAudio.play().catch(e => {});
+        }
+
+        function playClick() {
+            clickAudio.currentTime = 0;
+            clickAudio.play().catch(e => {});
+        }
+
+        document.querySelectorAll('button, input, .card-link').forEach(element => {
+            element.addEventListener('mouseenter', playHover);
+        });
+
+        function openModal(modalId) {
+            playClick();
+            if(modalId === 'home') return;
+            closeModals();
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModals() {
+            playClick();
+            document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        }
+    </script>
+
+</body>
+</html>
